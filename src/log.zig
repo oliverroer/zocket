@@ -47,19 +47,23 @@ pub const Log = struct {
             const oldest = @mod(cap + self.next - self.len, cap);
             if (self.elapsedTime > self.expirationTimes[oldest]) {
                 // this message has expired
-                self.allocator.free(self.messages[oldest]);
-                self.len -= 1;
+                self.free(oldest);
             } else {
                 return;
             }
         }
     }
 
+    fn free(self: *Log, i: usize) void {
+        self.allocator.free(self.messages[i]);
+        self.len -= 1;
+    }
+
     pub fn add(self: *Log, message: cstring) !void {
         const next = self.next;
         if (self.len == cap) {
             // we're capped out, gotta free
-            self.allocator.free(self.messages[next]);
+            self.free(next);
         }
 
         const len = message.len;
