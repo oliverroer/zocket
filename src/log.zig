@@ -7,7 +7,7 @@ const Vector2 = raylib.Vector2;
 const Font = raylib.Font;
 const Color = raylib.Color;
 const Rectangle = raylib.Rectangle;
-const cstring = [*:0]const u8;
+const cstring = [:0]const u8;
 const string = []const u8;
 
 const cap = 128;
@@ -21,7 +21,7 @@ pub const Log = struct {
     fontStyle: FontStyle,
 
     expirationTimes: [cap]f32 = undefined,
-    messages: [cap]string = undefined,
+    messages: [cap]cstring = undefined,
 
     // this is where the next log message would go
     next: usize = 0,
@@ -62,13 +62,12 @@ pub const Log = struct {
             self.allocator.free(self.messages[next]);
         }
 
-        const span = std.mem.span(message);
-        const len = span.len;
+        const len = message.len;
         const copy: []u8 = try self.allocator.alloc(u8, len + 1);
-        @memcpy(copy[0..len], span[0..len]);
+        @memcpy(copy[0..len], message[0..len]);
         copy[len] = 0;
 
-        self.messages[next] = copy;
+        self.messages[next] = @ptrCast(copy);
         self.expirationTimes[next] = self.elapsedTime + self.messageDuration;
         self.next = @mod(self.next + 1, cap);
         self.len += 1;
@@ -91,7 +90,7 @@ pub const Log = struct {
             var y: f32 = 0;
             for (0..self.len) |offset| {
                 const i = @mod(cap + latest - offset, cap);
-                const message: cstring = @ptrCast(self.messages[i].ptr);
+                const message: cstring = self.messages[i];
 
                 const measure = raylib.measureTextEx(
                     self.fontStyle.font,
@@ -130,7 +129,7 @@ pub const Log = struct {
 
             for (0..self.len) |offset| {
                 const i = @mod(cap + latest - offset, cap);
-                const message: cstring = @ptrCast(self.messages[i].ptr);
+                const message: cstring = self.messages[i];
 
                 const measure = raylib.measureTextEx(
                     self.fontStyle.font,

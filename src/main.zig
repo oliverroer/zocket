@@ -20,8 +20,8 @@ const message = "Hello, Zocket!";
 
 const fontData = @embedFile("./fonts/JetBrainsMono/JetBrainsMono-Regular.ttf");
 
-fn loadFont(fontSize: i32) raylib.Font {
-    return raylib.loadFontFromMemory(".ttf", fontData, fontSize, null);
+fn loadFont(fontSize: i32) !raylib.Font {
+    return try raylib.loadFontFromMemory(".ttf", fontData, fontSize, null);
 }
 
 pub fn main() !void {
@@ -52,7 +52,7 @@ pub fn main() !void {
         },
         .{
             .color = Color.white,
-            .font = loadFont(20),
+            .font = try loadFont(20),
             .size = 20,
             .spacing = 0,
         },
@@ -65,7 +65,7 @@ pub fn main() !void {
         bouncerRect,
         4,
         .{
-            .font = loadFont(20),
+            .font = try loadFont(20),
             .size = 20,
             .spacing = 0,
             .color = Color.white,

@@ -5,7 +5,7 @@ const Vector2 = raylib.Vector2;
 const Font = raylib.Font;
 const Color = raylib.Color;
 const Rectangle = raylib.Rectangle;
-const String = [*:0]const u8;
+const String = [:0]const u8;
 
 pub const Bouncer = struct {
     fontStyle: FontStyle,
